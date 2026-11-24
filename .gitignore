@@ -1,0 +1,14 @@
+# Silvaco TCAD Simulation Artifacts
+*.log
+*.str
+*.set
+*.bak
+*.tmp
+*.ps
+*.eps
+
+# OS and Editor Artifacts
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

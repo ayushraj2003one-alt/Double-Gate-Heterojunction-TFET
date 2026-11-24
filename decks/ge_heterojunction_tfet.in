@@ -1,0 +1,130 @@
+# ==============================================================================
+# Simulation Deck: Germanium (Ge) Source Heterojunction Double-Gate TFET
+# Tool: Silvaco TCAD (Atlas)
+# Device: p-Ge / i-Si / n-Si Double-Gate Tunnel FET
+# Author: Ayush Raj
+# ==============================================================================
+
+go atlas 
+
+# 1. MESH SPECIFICATION
+mesh space.mult=2.0
+
+x.mesh loc=0.000 spac=0.001
+x.mesh loc=0.001 spac=0.001
+x.mesh loc=0.005 spac=0.001
+x.mesh loc=0.010 spac=0.001
+x.mesh loc=0.015 spac=0.001
+x.mesh loc=0.020 spac=0.001
+x.mesh loc=0.025 spac=0.001
+x.mesh loc=0.030 spac=0.001
+x.mesh loc=0.035 spac=0.001
+x.mesh loc=0.040 spac=0.001
+x.mesh loc=0.045 spac=0.001
+x.mesh loc=0.050 spac=0.001
+x.mesh loc=0.055 spac=0.001
+x.mesh loc=0.060 spac=0.001
+x.mesh loc=0.065 spac=0.001
+x.mesh loc=0.070 spac=0.001
+x.mesh loc=0.075 spac=0.001
+x.mesh loc=0.080 spac=0.001
+x.mesh loc=0.085 spac=0.001
+x.mesh loc=0.090 spac=0.001
+x.mesh loc=0.095 spac=0.001
+x.mesh loc=0.100 spac=0.001
+x.mesh loc=0.105 spac=0.001
+x.mesh loc=0.110 spac=0.001
+
+y.mesh loc=-0.002 spac=0.001
+y.mesh loc=-0.001 spac=0.001
+y.mesh loc=0.000 spac=0.001
+y.mesh loc=0.001 spac=0.001
+y.mesh loc=0.002 spac=0.001
+y.mesh loc=0.003 spac=0.001
+y.mesh loc=0.004 spac=0.001
+y.mesh loc=0.005 spac=0.001
+y.mesh loc=0.006 spac=0.001
+y.mesh loc=0.007 spac=0.001
+y.mesh loc=0.008 spac=0.001
+y.mesh loc=0.009 spac=0.001
+y.mesh loc=0.010 spac=0.001
+y.mesh loc=0.011 spac=0.001
+y.mesh loc=0.012 spac=0.001
+y.mesh loc=0.013 spac=0.001
+y.mesh loc=0.014 spac=0.001
+y.mesh loc=0.015 spac=0.001
+y.mesh loc=0.016 spac=0.001
+y.mesh loc=0.017 spac=0.001
+y.mesh loc=0.018 spac=0.001
+y.mesh loc=0.019 spac=0.001
+y.mesh loc=0.020 spac=0.001
+y.mesh loc=0.021 spac=0.001
+y.mesh loc=0.022 spac=0.001
+
+QTX.MESH loc=0.020 spac=0.001
+QTX.MESH loc=0.040 spac=0.001
+QTX.MESH loc=0.070 spac=0.001
+QTX.MESH loc=0.090 spac=0.001
+
+QTY.MESH loc=0.000 spac=0.001
+QTY.MESH loc=0.020 spac=0.001
+
+# 2. REGION DEFINITIONS (Heterojunction: Region 4 is Germanium)
+region number=1 x.min=0.000 x.max=0.030 y.min=-0.002 y.max=0.000 material=Air       
+region number=2 x.min=0.030 x.max=0.080 y.min=-0.002 y.max=0.000 material=Sio2
+region number=3 x.min=0.080 x.max=0.120 y.min=-0.002 y.max=0.000 material=Air 
+
+# Region 4: Germanium Source
+region number=4 x.min=0.000 x.max=0.030 y.min=0.000 y.max=0.020 material=Ge
+# Region 5: Silicon Channel
+region number=5 x.min=0.030 x.max=0.080 y.min=0.000 y.max=0.020 material=Silicon
+# Region 6: Silicon Drain
+region number=6 x.min=0.080 x.max=0.110 y.min=0.000 y.max=0.020 material=Silicon
+
+region number=7 x.min=0.000 x.max=0.030 y.min=0.020 y.max=0.022 material=Air
+region number=8 x.min=0.030 x.max=0.080 y.min=0.020 y.max=0.022 material=Sio2
+region number=9 x.min=0.080 x.max=0.110 y.min=0.020 y.max=0.022 material=Air
+
+# 3. ELECTRODES SPECIFICATION
+electrode name=source number=1 x.min=0.000 x.max=0.000 y.min=0.000 y.max=0.020
+electrode name=drain  number=2 x.min=0.110 x.max=0.110 y.min=0.000 y.max=0.020
+electrode name=gate1  number=3 x.min=0.030 x.max=0.080 y.min=-0.002 y.max=-0.002
+electrode name=gate2  number=4 x.min=0.030 x.max=0.080 y.min=0.022 y.max=0.022
+
+# 4. DOPING PROFILES
+doping uniform conc=1e20 p.type direction=y region=4
+doping uniform conc=1e15 n.type direction=y region=5
+doping uniform conc=5e18 n.type direction=y region=6
+
+# 5. CONTACTS & MATERIAL PARAMETERS
+contact name=drain neutral 
+contact name=source neutral 
+contact name=gate1 workfunction=4.07
+contact name=gate2 workfunction=4.07 common=gate1
+
+material material=silicon me.tunnel=0.20 mh.tunnel=0.24
+material material=Ge me.tunnel=0.082 mh.tunnel=0.044 affinity=4.0
+
+# 6. PHYSICAL MODELS
+models cvt srh bgn FERMI
+models bbt.nonlocal bbt.nlderivs qtunn.dir=1 
+
+# 7. NUMERICAL METHODS
+method newton carrier=2 trap itlimit=50 atrap=0.5 maxtraps=4 \
+       autonr nrcriterion=0.1 tol.time=0.005 dt.min=1e-25
+
+# 8. SOLVE & SIMULATION RUN
+solve init
+solve vdrain=0.001
+solve vdrain=0.0 vstep=0.05 vfinal=1.0 name=drain
+
+log outf=Ayushmini-ge.log
+solve vgate1=0.0 vstep=0.05 vfinal=1.0 name=gate1 AC freq=1e6
+
+output e.field recombination band.param con.band val.band e.mobility ex.velocity \
+       ey.velocity e.velocity impact.i flowlines charge j.drift j.total j.diffusion 
+
+save outf=Ayushmini-ge.str
+tonyplot Ayushmini-ge.log Ayushmini-ge.str 
+
+quit

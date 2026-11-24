@@ -1,0 +1,155 @@
+# ==============================================================================
+# Simulation Deck: Baseline Silicon (Si) Homojunction Double-Gate TFET
+# Tool: Silvaco TCAD (Atlas)
+# Device: p-i-n Double-Gate Tunnel Field-Effect Transistor (DG-TFET)
+# Author: Ayush Raj
+# ==============================================================================
+
+go atlas 
+
+# ------------------------------------------------------------------------------
+# 1. MESH SPECIFICATION
+# ------------------------------------------------------------------------------
+mesh space.mult=2.0
+
+# Horizontal mesh (X direction) - 110 nm total device length
+x.mesh loc=0.000 spac=0.001
+x.mesh loc=0.001 spac=0.001
+x.mesh loc=0.005 spac=0.001
+x.mesh loc=0.010 spac=0.001
+x.mesh loc=0.015 spac=0.001
+x.mesh loc=0.020 spac=0.001
+x.mesh loc=0.025 spac=0.001
+x.mesh loc=0.030 spac=0.001
+x.mesh loc=0.035 spac=0.001
+x.mesh loc=0.040 spac=0.001
+x.mesh loc=0.045 spac=0.001
+x.mesh loc=0.050 spac=0.001
+x.mesh loc=0.055 spac=0.001
+x.mesh loc=0.060 spac=0.001
+x.mesh loc=0.065 spac=0.001
+x.mesh loc=0.070 spac=0.001
+x.mesh loc=0.075 spac=0.001
+x.mesh loc=0.080 spac=0.001
+x.mesh loc=0.085 spac=0.001
+x.mesh loc=0.090 spac=0.001
+x.mesh loc=0.095 spac=0.001
+x.mesh loc=0.100 spac=0.001
+x.mesh loc=0.105 spac=0.001
+x.mesh loc=0.110 spac=0.001
+
+# Vertical mesh (Y direction) - Body thickness 20 nm, Oxide thickness 2 nm
+y.mesh loc=-0.002 spac=0.001
+y.mesh loc=-0.001 spac=0.001
+y.mesh loc=0.000 spac=0.001
+y.mesh loc=0.001 spac=0.001
+y.mesh loc=0.002 spac=0.001
+y.mesh loc=0.003 spac=0.001
+y.mesh loc=0.004 spac=0.001
+y.mesh loc=0.005 spac=0.001
+y.mesh loc=0.006 spac=0.001
+y.mesh loc=0.007 spac=0.001
+y.mesh loc=0.008 spac=0.001
+y.mesh loc=0.009 spac=0.001
+y.mesh loc=0.010 spac=0.001
+y.mesh loc=0.011 spac=0.001
+y.mesh loc=0.012 spac=0.001
+y.mesh loc=0.013 spac=0.001
+y.mesh loc=0.014 spac=0.001
+y.mesh loc=0.015 spac=0.001
+y.mesh loc=0.016 spac=0.001
+y.mesh loc=0.017 spac=0.001
+y.mesh loc=0.018 spac=0.001
+y.mesh loc=0.019 spac=0.001
+y.mesh loc=0.020 spac=0.001
+y.mesh loc=0.021 spac=0.001
+y.mesh loc=0.022 spac=0.001
+
+# Quantum Tunneling Mesh lines (critical for nonlocal BTBT accuracy)
+QTX.MESH loc=0.020 spac=0.001
+QTX.MESH loc=0.040 spac=0.001
+QTX.MESH loc=0.070 spac=0.001
+QTX.MESH loc=0.090 spac=0.001
+
+QTY.MESH loc=0.000 spac=0.001
+QTY.MESH loc=0.020 spac=0.001
+
+# ------------------------------------------------------------------------------
+# 2. REGION DEFINITIONS
+# ------------------------------------------------------------------------------
+# Top Dielectric Layer (y = -0.002 to 0.000 um)
+region number=1 x.min=0.000 x.max=0.030 y.min=-0.002 y.max=0.000 material=Air       
+region number=2 x.min=0.030 x.max=0.080 y.min=-0.002 y.max=0.000 material=Sio2
+region number=3 x.min=0.080 x.max=0.120 y.min=-0.002 y.max=0.000 material=Air 
+
+# Semiconductor Channel / Body Layer (y = 0.000 to 0.020 um)
+region number=4 x.min=0.000 x.max=0.030 y.min=0.000 y.max=0.020 material=Silicon
+region number=5 x.min=0.030 x.max=0.080 y.min=0.000 y.max=0.020 material=Silicon
+region number=6 x.min=0.080 x.max=0.110 y.min=0.000 y.max=0.020 material=Silicon
+
+# Bottom Dielectric Layer (y = 0.020 to 0.022 um)
+region number=7 x.min=0.000 x.max=0.030 y.min=0.020 y.max=0.022 material=Air
+region number=8 x.min=0.030 x.max=0.080 y.min=0.020 y.max=0.022 material=Sio2
+region number=9 x.min=0.080 x.max=0.110 y.min=0.020 y.max=0.022 material=Air
+
+# ------------------------------------------------------------------------------
+# 3. ELECTRODES SPECIFICATION
+# ------------------------------------------------------------------------------
+electrode name=source number=1 x.min=0.000 x.max=0.000 y.min=0.000 y.max=0.020
+electrode name=drain  number=2 x.min=0.110 x.max=0.110 y.min=0.000 y.max=0.020
+electrode name=gate1  number=3 x.min=0.030 x.max=0.080 y.min=-0.002 y.max=-0.002
+electrode name=gate2  number=4 x.min=0.030 x.max=0.080 y.min=0.022 y.max=0.022
+
+# ------------------------------------------------------------------------------
+# 4. DOPING PROFILES (p-i-n Configuration)
+# ------------------------------------------------------------------------------
+# Source: Heavy p-type doping (1e20 cm^-3)
+doping uniform conc=1e20 p.type direction=y region=4
+# Channel: Intrinsic / lightly doped n-type (1e15 cm^-3)
+doping uniform conc=1e15 n.type direction=y region=5
+# Drain: Moderate n-type doping (5e18 cm^-3)
+doping uniform conc=5e18 n.type direction=y region=6
+
+# ------------------------------------------------------------------------------
+# 5. CONTACTS & MATERIAL PARAMETERS
+# ------------------------------------------------------------------------------
+contact name=drain neutral 
+contact name=source neutral 
+contact name=gate1 workfunction=4.07
+contact name=gate2 workfunction=4.07 common=gate1
+
+material material=silicon me.tunnel=0.20 mh.tunnel=0.24
+
+# ------------------------------------------------------------------------------
+# 6. PHYSICAL MODELS
+# ------------------------------------------------------------------------------
+# cvt: Lombardi mobility, srh: Shockley-Read-Hall, bgn: Bandgap narrowing, FERMI statistics
+models cvt srh bgn FERMI
+# Nonlocal Band-to-Band Tunneling (BTBT) along transport direction (x-dir)
+models bbt.nonlocal bbt.nlderivs qtunn.dir=1 
+
+# ------------------------------------------------------------------------------
+# 7. NUMERICAL METHODS
+# ------------------------------------------------------------------------------
+method newton carrier=2 trap itlimit=50 atrap=0.5 maxtraps=4 \
+       autonr nrcriterion=0.1 tol.time=0.005 dt.min=1e-25
+
+# ------------------------------------------------------------------------------
+# 8. SOLVE & SIMULATION RUN
+# ------------------------------------------------------------------------------
+solve init
+solve vdrain=0.001
+solve vdrain=0.0 vstep=0.05 vfinal=1.0 name=drain
+
+# Log I-V characteristics
+log outf=Ayushmini.log
+solve vgate1=0.0 vstep=0.05 vfinal=1.0 name=gate1 AC freq=1e6
+
+# Output distribution parameters
+output e.field recombination band.param con.band val.band e.mobility ex.velocity \
+       ey.velocity e.velocity impact.i flowlines charge j.drift j.total j.diffusion 
+
+save outf=Ayushmini.str
+tonyplot Ayushmini.log Ayushmini.str 
+
+quit
